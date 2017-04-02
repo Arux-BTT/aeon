@@ -4,6 +4,7 @@ project (miniupnpc C)
 set (MINIUPNPC_VERSION 2.0)
 set (MINIUPNPC_API_VERSION 16)
 
+#[[ - we comment out this block as we don't support these other build types
 if (NOT CMAKE_BUILD_TYPE)
   if (WIN32)
     set (DEFAULT_BUILD_TYPE MinSizeRel)
@@ -14,6 +15,7 @@ if (NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
         FORCE)
 endif()
+]]
 
 option (UPNPC_BUILD_STATIC "Build static library" TRUE)
 option (UPNPC_BUILD_SHARED "Build shared library" TRUE)
@@ -43,6 +45,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   add_definitions (-D_DARWIN_C_SOURCE)
 endif ()
 
+#[[ - we comment out this block as we already set flags
 # Set compiler specific build flags
 if (CMAKE_COMPILER_IS_GNUC)
   # Set our own default flags at first run.
@@ -65,6 +68,7 @@ if (CMAKE_COMPILER_IS_GNUC)
 
   endif (NOT CONFIGURED)
 endif ()
+]]
 
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/miniupnpcstrings.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/miniupnpcstrings.h)
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
@@ -96,8 +100,11 @@ if (WIN32)
 endif (WIN32)
 
 if (WIN32)
-  find_library (WINSOCK2_LIBRARY NAMES ws2_32 WS2_32 Ws2_32)
-  find_library (IPHLPAPI_LIBRARY NAMES iphlpapi)
+  # We use set instead of find_library because otherwise static compilation on Windows breaks. Don't ask me why, just roll with it.
+  # find_library (WINSOCK2_LIBRARY NAMES ws2_32 WS2_32 Ws2_32)
+  # find_library (IPHLPAPI_LIBRARY NAMES iphlpapi)
+  set (WINSOCK2_LIBRARY ws2_32)
+  set (IPHLPAPI_LIBRARY iphlpapi)
   set (LDLIBS ${WINSOCK2_LIBRARY} ${IPHLPAPI_LIBRARY} ${LDLIBS})
 #elseif (CMAKE_SYSTEM_NAME STREQUAL "Solaris")
 #  find_library (SOCKET_LIBRARY NAMES socket)
@@ -180,6 +187,7 @@ install (FILES
   DESTINATION include/miniupnpc
 )
 
-set (CONFIGURED YES CACHE INTERNAL "")
+# commented out by Ben Boeckel, who I presume knows what he's doing;)
+# set (CONFIGURED YES CACHE INTERNAL "")
 
 # vim: ts=2:sw=2
