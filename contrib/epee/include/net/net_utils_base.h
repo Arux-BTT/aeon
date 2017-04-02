@@ -36,6 +36,14 @@
 #define MAKE_IP( a1, a2, a3, a4 )	(a1|(a2<<8)|(a3<<16)|(a4<<24))
 #endif
 
+// Is noexcept supported? (can be removed when visual studio 2013 support will be ended)
+#if defined(__clang__) && __has_feature(cxx_noexcept) || \
+    defined(__GXX_EXPERIMENTAL_CXX0X__) && __GNUC__ * 10 + __GNUC_MINOR__ >= 46 || \
+    defined(_MSC_FULL_VER) && _MSC_FULL_VER >= 190023026
+#  define NOEXCEPT(false) noexcept(false)
+#else
+#define NOEXCEPT(false)
+#endif
 
 namespace epee
 {
@@ -113,7 +121,7 @@ namespace net_utils
     virtual bool add_ref()=0;
     virtual bool release()=0;
   protected:
-    virtual ~i_service_endpoint() noexcept(false) {}
+    virtual ~i_service_endpoint() NOEXCEPT(false) {}
 	};
 
 

@@ -37,6 +37,15 @@
 #define EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL 100
 #endif
 
+// Is noexcept supported? (can be removed when visual studio 2013 support will be ended)
+#if defined(__clang__) && __has_feature(cxx_noexcept) || \
+    defined(__GXX_EXPERIMENTAL_CXX0X__) && __GNUC__ * 10 + __GNUC_MINOR__ >= 46 || \
+    defined(_MSC_FULL_VER) && _MSC_FULL_VER >= 190023026
+#  define NOEXCEPT(false) noexcept(false)
+#else
+#define NOEXCEPT(false)
+#endif
+
 namespace epee
 {
   namespace serialization
@@ -68,7 +77,7 @@ namespace epee
           ++m_counter_ref;
           CHECK_AND_ASSERT_THROW_MES(m_counter_ref < EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL, "Wrong blob data in portable storage: recursion limitation (" << EPEE_PORTABLE_STORAGE_RECURSION_LIMIT_INTERNAL << ") exceeded");
         }
-        ~recursuion_limitation_guard() noexcept(false)
+        ~recursuion_limitation_guard() NOEXCEPT(false)
         {
           CHECK_AND_ASSERT_THROW_MES(m_counter_ref != 0, "Internal error: m_counter_ref == 0 while ~recursuion_limitation_guard()");
           --m_counter_ref;

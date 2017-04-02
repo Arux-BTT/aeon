@@ -37,6 +37,16 @@
 #include "misc_language.h"
 #include "pragma_comp_defs.h"
 
+// Is noexcept supported?
+#if defined(__clang__) && __has_feature(cxx_noexcept) || \
+    defined(__GXX_EXPERIMENTAL_CXX0X__) && __GNUC__ * 10 + __GNUC_MINOR__ >= 46 || \
+    defined(_MSC_FULL_VER) && _MSC_FULL_VER >= 190023026
+#  define NOEXCEPT(false) noexcept(false)
+#else
+#define NOEXCEPT(false)
+#endif
+
+
 PRAGMA_WARNING_PUSH
 namespace epee
 {
@@ -63,7 +73,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
 PRAGMA_WARNING_DISABLE_VS(4355)
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
-  connection<t_protocol_handler>::~connection() noexcept(false)
+  connection<t_protocol_handler>::~connection() NOEXCEPT(false)
   {
     if(!m_was_shutdown)
     {
